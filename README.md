@@ -39,7 +39,9 @@ Lobby
 
 ### Sala de clase
 
-![Sala de MeetCauca](docs/screenshots/sala-preview.png)
+Profesor
+![Sala de MeetCauca]([docs/screenshots/sala-preview.png](https://github.com/fabicar20/Proyecto/blob/b9878ba98a3498d5af6604e16a63fcaac43c96f0/Captura%20de%20pantalla%202026-06-07%20231939.png))
+
 
 Sala de Clase
 
