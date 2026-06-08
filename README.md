@@ -32,7 +32,7 @@ MeetCauca es una aplicacion web de videollamadas educativas en tiempo real. El p
 
 ### Lobby
 
-![Lobby de MeetCauca](docs/screenshots/lobby-preview.png)
+![Lobby de MeetCauca](https://github.com/fabicar20/Proyecto/blob/4eec64ffe1cbba17d637a041c9b521a65fa5f8ee/Captura%20de%20pantalla%202026-06-07%20230953.png)
 
 ### Sala de clase
 
