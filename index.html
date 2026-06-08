@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeetCauca</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- LOBBY -->
+  <div id="lobby-screen">
+    <div class="lobby-card">
+      <div class="lobby-logo">📹</div>
+      <h1>MeetCauca</h1>
+      <p>Videollamada en tiempo real con Mediasoup</p>
+      <div class="input-group">
+        <label>Tu nombre</label>
+        <input type="text" id="name-input" placeholder="Ej: María González" maxlength="30" autofocus />
+      </div>
+      <div class="input-group">
+        <label>Nombre de la sala</label>
+        <input type="text" id="room-name-input" placeholder="Ej: Redes Empresariales - Clase 5" maxlength="60" />
+      </div>
+      <div class="role-selector">
+        <button class="role-btn active" id="role-student" data-role="student"> Estudiante</button>
+        <button class="role-btn" id="role-teacher" data-role="teacher"> Profesor</button>
+      </div>
+      <button class="join-btn" id="join-btn">Unirse a la sala</button>
+      <div class="lobby-error hidden" id="lobby-error"></div>
+      <div class="lobby-footer">
+        Tecnología: <span>Mediasoup</span> + <span>WebRTC</span> + <span>Socket.io</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SALA -->
+  <div id="meet-screen" class="hidden">
+
+    <header class="meet-header">
+      <div class="meet-header-left">
+        <div class="meet-logo-sm">📹</div>
+        <div>
+          <div class="meet-title">MeetCauca</div>
+          <div class="meet-subtitle" id="room-name-display">Sala principal</div>
+        </div>
+      </div>
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        En vivo
+      </div>
+      <div class="header-info">
+        <div class="header-name" id="my-name-display"></div>
+        <div class="header-count" id="participant-count">1 participante</div>
+        <div class="header-status" id="room-status">Conectando...</div>
+      </div>
+    </header>
+
+    <div class="meet-body">
+      <div class="grid-area">
+        <div id="participants-grid"></div>
+      </div>
+
+      <!-- CHAT -->
+      <div id="chat-panel" class="side-panel hidden">
+        <div class="panel-header">💬 Chat de sala</div>
+        <div id="chat-messages"></div>
+        <div class="chat-footer">
+          <textarea id="chat-input" placeholder="Escribe un mensaje..." rows="1"></textarea>
+          <button id="chat-send">➤</button>
+        </div>
+      </div>
+
+      <!-- PARTICIPANTES -->
+      <div id="participants-panel" class="side-panel hidden">
+        <div class="panel-header">👥 Participantes</div>
+        <div id="participants-list"></div>
+      </div>
+
+      <!-- MODO CLASE: COLA DE TURNOS -->
+      <div id="turns-panel" class="side-panel hidden">
+        <div class="panel-header">🙋 Cola de turnos</div>
+        <div id="turns-list">
+          <div class="turns-empty">Nadie ha pedido la palabra</div>
+        </div>
+      </div>
+
+      <!-- SEMAFORO DE COMPRENSION -->
+      <div id="comprehension-panel" class="side-panel hidden">
+        <div class="panel-header">Semaforo de comprension</div>
+        <div class="comprehension-summary">
+          <div class="comp-card comp-green"><span id="comp-green-count">0</span><small>Entendieron</small></div>
+          <div class="comp-card comp-yellow"><span id="comp-yellow-count">0</span><small>Con dudas</small></div>
+          <div class="comp-card comp-red"><span id="comp-red-count">0</span><small>No entendieron</small></div>
+        </div>
+        <div class="comprehension-actions">
+          <button class="comp-choice comp-green" data-status="green">Verde</button>
+          <button class="comp-choice comp-yellow" data-status="yellow">Amarillo</button>
+          <button class="comp-choice comp-red" data-status="red">Rojo</button>
+          <button class="comp-clear" id="comp-clear">Quitar estado</button>
+        </div>
+        <div id="comprehension-list"></div>
+      </div>
+
+      <!-- ENCUESTAS RAPIDAS -->
+      <div id="poll-panel" class="side-panel hidden">
+        <div class="panel-header">Encuesta rapida</div>
+        <div id="poll-teacher-tools" class="poll-teacher-tools hidden">
+          <textarea id="poll-question" placeholder="Escribe la pregunta..." rows="2"></textarea>
+          <div class="poll-type-grid">
+            <button class="poll-start-btn" data-type="yesno">Si / No</button>
+            <button class="poll-start-btn" data-type="abcd">A / B / C / D</button>
+            <button class="poll-start-btn" data-type="understanding">Entendi / Dudas</button>
+          </div>
+        </div>
+        <div id="poll-active" class="poll-active">
+          <div class="poll-empty">No hay encuesta activa</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REACCIONES FLOTANTES -->
+    <div id="floating-emojis"></div>
+
+    <div class="meet-controls">
+      <button class="ctrl-btn" id="btn-mute">
+        <span class="btn-icon">🎙️</span>
+        <span class="btn-label">Silenciar</span>
+      </button>
+      <button class="ctrl-btn" id="btn-cam">
+        <span class="btn-icon">📹</span>
+        <span class="btn-label">Apagar cam</span>
+      </button>
+
+      <!-- REACCIONES -->
+      <div class="reactions-wrapper">
+        <button class="ctrl-btn" id="btn-reactions">
+          <span class="btn-icon">😀</span>
+          <span class="btn-label">Reaccionar</span>
+        </button>
+        <div id="reactions-menu" class="reactions-menu hidden">
+          <button class="reaction-opt" data-emoji="👍">👍</button>
+          <button class="reaction-opt" data-emoji="👏">👏</button>
+          <button class="reaction-opt" data-emoji="❤️">❤️</button>
+          <button class="reaction-opt" data-emoji="😂">😂</button>
+          <button class="reaction-opt" data-emoji="🔥">🔥</button>
+        </div>
+      </div>
+
+      <button class="ctrl-btn" id="btn-chat">
+        <span class="btn-icon">💬</span>
+        <span class="btn-label">Chat</span>
+        <span id="chat-badge"></span>
+      </button>
+      <button class="ctrl-btn" id="btn-participants">
+        <span class="btn-icon">👥</span>
+        <span class="btn-label">Participantes</span>
+      </button>
+
+      <button class="ctrl-btn" id="btn-comprehension">
+        <span class="btn-icon">🚦</span>
+        <span class="btn-label">Comprension</span>
+      </button>
+
+      <button class="ctrl-btn" id="btn-poll">
+        <span class="btn-icon">📊</span>
+        <span class="btn-label">Encuesta</span>
+      </button>
+
+      <!-- MODO CLASE -->
+      <button class="ctrl-btn class-mode-btn hidden" id="btn-class-mode">
+        <span class="btn-icon">🎓</span>
+        <span class="btn-label">Modo Clase</span>
+      </button>
+
+      <!-- PEDIR PALABRA (estudiantes) -->
+      <button class="ctrl-btn raise-hand-btn hidden" id="btn-raise-hand">
+        <span class="btn-icon">🙋</span>
+        <span class="btn-label">Pedir palabra</span>
+      </button>
+
+      <!-- VER TURNOS (todos cuando modo clase activo) -->
+      <button class="ctrl-btn hidden" id="btn-turns">
+        <span class="btn-icon">📋</span>
+        <span class="btn-label">Turnos</span>
+      </button>
+
+      <!-- SILENCIAR TODOS (solo profe) -->
+      <button class="ctrl-btn danger-btn hidden" id="btn-mute-all">
+        <span class="btn-icon">🔇</span>
+        <span class="btn-label">Silenciar todos</span>
+      </button>
+
+      <button class="ctrl-btn leave" id="btn-leave">
+        <span class="btn-icon">📵</span>
+        <span class="btn-label">Salir</span>
+      </button>
+    </div>
+
+    <!-- BANNER: MODO CLASE ACTIVO -->
+    <div id="class-mode-banner" class="hidden">
+      🎓 <strong>Modo Clase activo</strong> — Pide la palabra para hablar
+    </div>
+
+    <!-- NOTIFICACIÓN: te dieron la palabra -->
+    <div id="word-granted-toast" class="hidden">
+      🎤 ¡El profesor te dio la palabra!
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/voice.js"></script>
+</body>
+</html>
