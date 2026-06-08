@@ -43,6 +43,11 @@ Profesor
 ![Sala de MeetCauca](https://github.com/fabicar20/Proyecto/blob/601b5ab93dd759a8bf2e52f09c0638d80ac83266/Captura%20de%20pantalla%202026-06-07%20231939.png)
 
 
+Estudiante
+![Sala de Estudiante](https://github.com/fabicar20/Proyecto/blob/fdf8dae7aa338569b85684206eb222fb8838a25e/Captura%20de%20pantalla%202026-06-07%20232955.png)
+
+
+
 Sala de Clase
 
 
